@@ -8,6 +8,14 @@ The project integrates data from the **UNHCR Refugee Statistics API** with geosp
 
 The original implementation was developed as part of the **IP – Spatial Data Infrastructure (SDI) Services Implementation** course within the MSc Applied Geoinformatics programme at the University of Salzburg.
 
+## Original Interactive Dashboard
+
+![UATE Interactive Dashboard](assets/images/uate-dashboard-overview.png)
+
+The original UATE dashboard combined an interactive European map with asylum application statistics, demographic information, asylum-decision comparisons, and origin–destination visualization. Users could explore annual patterns and interact with destination countries to examine country-level information.
+
+> **Note:** The original academic deployment is no longer publicly available. The screenshot above documents the completed implementation, while a reconstructed portfolio version is planned.
+
 ---
 
 ## Project Objectives
@@ -28,6 +36,11 @@ The project was designed to:
 The original system followed an end-to-end geospatial data workflow:
 
 **UNHCR Refugee Statistics API → Python → Google Geocoding API → PostgreSQL/PostGIS → GeoServer → Django → Interactive Web Dashboard**
+### System Architecture
+
+![UATE SDI Architecture](assets/images/uate-sdi-architecture.png)
+
+*Original UATE system architecture showing the integration of the UNHCR Refugee Statistics API, Python processing, Google Geocoding API, PostGIS, GeoServer services, Django, JavaScript, and the cloud-hosted web application.*
 
 ### Data Layer
 UNHCR API data covering Ukrainian asylum applications, asylum decisions, and demographic characteristics.
