@@ -143,5 +143,5 @@ Detailed project documentation covering the SDI architecture, methodology, data 
 ## Project Status
 
 **Original academic implementation:** Completed  
-**GitHub portfolio organization:** Completed 
+**GitHub portfolio organization:** Completed  
 **Interactive dashboard reconstruction:** Planned
