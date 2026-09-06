@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Map of Selected Countries</title>
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+    />
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+
+    <script
+      src="https://maps.googleapis.com/maps/api/js?key='APIKEY'&callback=initMap"
+      async
+      defer
+    ></script>
+    <style>
+      #map {
+        height: 100%;
+      }
+      html,
+      body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="map"></div>
+    {{coordinates_list}}
+
+    <div id="info-card" style="display: none"></div>
+    <button onclick="drawDemo()">Draw Demo</button>
+
+    <script type="text/javascript">
+      let map;
+      let ukraineCoords = { lat: 48.3794, lng: 31.1656 };
+
+      let coordinatesList = JSON.parse(
+        "{{ coordinates_list_json|safe|escapejs }}"
+      );
+      console.log(coordinatesList);
+      function initMap() {
+        // New map
+        map = new google.maps.Map(document.getElementById("map"), {
+          zoom: 4,
+          // Central point of Europe
+          center: { lat: 54.526, lng: 15.2551 },
+        });
+
+        // Extend bounds for each marker
+        let bounds = new google.maps.LatLngBounds();
+        for (let i = 0; i < coordinatesList.length; i++) {
+          addMarker(coordinatesList[i]);
+        }
+
+        addUkMarker({ coords: ukraineCoords });
+
+        // Add Marker Function
+        function addMarker(props) {
+          let marker = new google.maps.Marker({
+            position: props.coords,
+            map: map,
+          });
+
+          console.log(props);
+
+          // Check content
+          if (props.content) {
+            let infoWindow = new google.maps.InfoWindow({
+              content: props.content,
+            });
+
+            marker.addListener("click", function () {
+              // Update card content
+              updateInfoCard(props.card_data);
+              drawLineToUkraine(props.coords);
+            });
+          }
+
+          // Extend the bounds to include each marker's position
+          bounds.extend(marker.position);
+        }
+
+        function addUkMarker(props) {
+          let marker = new google.maps.Marker({
+            position: props.coords,
+            map: map,
+            icon: {
+              // URL to your custom colored icon
+              url: "https://img.icons8.com/?size=160&id=eWOgiqwt7Cta&format=png",
+              scaledSize: new google.maps.Size(40, 40),
+            },
+          });
+        }
+
+        // Fit map to the newly inclusive bounds
+        map.fitBounds(bounds);
+      }
+
+      function updateInfoCard(data) {
+        let card = document.getElementById("info-card");
+        card.style.display = "block";
+        card.innerHTML = `
+          <p>Year: ${data.year}</p>
+          <p>Country of Origin: ${data.coo_name}</p>
+          <p>Country of Asylum: ${data.coa_name}</p>
+          <p>Applications: ${data.applications}</p>
+          <p>Decision Level: ${data.decision_level}</p>
+          `;
+      }
+      let currentLine = null;
+      function drawLineToUkraine(coaCoords) {
+        if (currentLine) {
+          // Remove existing line if present
+          currentLine.setMap(null);
+        }
+
+        let lineSymbol = {
+          path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
+        };
+
+        let line = new google.maps.Polyline({
+          path: [ukraineCoords, coaCoords],
+          icons: [
+            {
+              icon: lineSymbol,
+              offset: "0%",
+            },
+          ],
+          map: map,
+          geodesic: true,
+          strokeColor: "red",
+          strokeOpacity: 1.0,
+          strokeWeight: 2,
+        });
+        // Update current line
+        currentLine = line;
+
+        // Calling animate arrow function
+
+        animateArrow(line);
+      }
+
+      function animateArrow(line) {
+        let count = 0;
+        window.setInterval(function () {
+          // Adjust speed and loop
+          count = (count + 1) % 200;
+          // Move the icon
+          let icons = line.get("icons");
+          icons[0].offset = count / 2 + "%";
+          // Adjust for speed
+          line.set("icons", icons);
+        }, 20);
+      }
+    </script>
+  </body>
+</html>
